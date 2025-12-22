@@ -78,6 +78,19 @@
         Change
       </button>
     </div>
+    <!-- LEVEL INDICATOR -->
+    <div id="homeLevel"
+        style="margin:6px 0;font-size:14px;color:#374151">
+      Level:
+      <b id="currentLevelLabel">⭐ Beginner</b>
+      <button
+        style="margin-left:6px;padding:4px 8px;font-size:12px;border-radius:8px;background:#e5e7eb"
+        onclick="openLevelSelector()"
+      >
+        Change
+      </button>
+    </div>
+
     <div style="font-size:13px;margin-top:4px" id="homePracticeToday">
             ❌ Not practiced today
     </div>
@@ -180,6 +193,17 @@
       <button class="btn animals mode-btn" onclick="goHome()">🏠 Home</button>
     </div>
   </div>
+    <!-- LEVEL SELECTOR -->
+  <div id="levelSelector" class="hidden"
+     style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:10000">
+  <div style="background:#fff;padding:20px;border-radius:16px;
+              width:280px;margin:20vh auto;text-align:center">
+    <h3>Select Level</h3>
+    <div id="levelOptions" style="margin-top:14px"></div>
+    <button style="margin-top:12px" onclick="closeLevelSelector()">Cancel</button>
+  </div>
+</div>
+
   <!-- PROFILE -->
 <div id="profile" class="hidden">
   <h2>👤 Who is learning today?</h2>
@@ -255,17 +279,167 @@
   function shuffle(arr){ return arr.slice().sort(()=>Math.random()-0.5); }
 
   // ===== DATA =====
-const DATA={
+/*const DATA={
  animals:['நாய்|Dog','பூனை|Cat','யானை|Elephant','சிங்கம்|Lion','புலி|Tiger','மாடு|Cow','குதிரை|Horse','ஆடு|Goat','செம்மறியாடு|Sheep','குரங்கு|Monkey','கரடி|Bear','நரி|Fox','மான்|Deer','ஒட்டகம்|Camel','பன்றி|Pig','எலி|Mouse','முயல்|Rabbit','நீர்யானை|Hippopotamus','முதலை|Crocodile','பாம்பு|Snake'],
  birds:['காகம்|Crow','கிளி|Parrot','மயில்|Peacock','சிட்டுக்குருவி|Sparrow','ஆந்தை|Owl','புறா|Pigeon','வாத்து|Duck','கோழி|Hen','சேவல்|Rooster','குயில்|Cuckoo','பருந்து|Eagle','கழுகு|Vulture','நாரை|Stork','மீன்கொத்தி|Kingfisher','அன்னம்|Swan','வான்கோழி|Turkey','பென்குயின்|Penguin','தும்பி|Bulbul','மைனா|Myna','நாரைமூக்கு|Crane'],
  fruits:['ஆப்பிள்|Apple','வாழைப்பழம்|Banana','மாம்பழம்|Mango','திராட்சை|Grapes','ஆரஞ்சு|Orange','எலுமிச்சை|Lemon','பப்பாளி|Papaya','கொய்யா|Guava','மாதுளை|Pomegranate','அன்னாசி|Pineapple','ஸ்ட்ராபெரி|Strawberry','பேரிக்காய்|Pear','சப்போட்டா|Sapota','நாவற்பழம்|Jamun','ஆமணக்கு|Fig','பிளம்|Plum','செர்ரி|Cherry','பீச்|Peach','பேரிச்சை|Date','கிவி|Kiwi'],
  verbs:['படி|Read','எழுது|Write','ஓடு|Run','நட|Walk','சாப்பிடு|Eat','குடி|Drink','பேசு|Speak','கேள்|Listen','பார்|See','எடு|Take','கொடு|Give','வா|Come','போ|Go','உட்கார்|Sit','நில்|Stand','தூங்கு|Sleep','எழு|Wake','விளையாடு|Play','வேலைசெய்|Work','சிந்தி|Think'],
  household:['மேஜை|Table','நாற்காலி|Chair','கட்டில்|Bed','அலமாரி|Cupboard','கதவு|Door','ஜன்னல்|Window','விளக்கு|Lamp','மின்விசிறி|Fan','டிவி|Television','ஃப்ரிட்ஜ்|Refrigerator','அடுப்பு|Stove','பாத்திரம்|Vessel','கரண்டி|Spoon','தட்டு|Plate','கிண்ணம்|Bowl','துடைப்பம்|Broom','கடிகாரம்|Clock','தலையணை|Pillow','போர்வை|Blanket','தொலைபேசி|Telephone'],
  grocery:['அரிசி|Rice','கோதுமை|Wheat','சர்க்கரை|Sugar','உப்பு|Salt','எண்ணெய்|Oil','பால்|Milk','தயிர்|Curd','வெண்ணெய்|Butter','முட்டை|Egg','பருப்பு|Lentils','கடலை|Peanut','பாசிப்பயறு|Green gram','உருளைக்கிழங்கு|Potato','வெங்காயம்|Onion','தக்காளி|Tomato','மிளகாய்|Chilli','மஞ்சள்|Turmeric','மிளகு|Pepper','சீரகம்|Cumin','கொத்தமல்லி|Coriander']
+};*/
+const LEVEL_DATA={
+  1:{
+    animals:['நாய்|Dog','பூனை|Cat','யானை|Elephant','சிங்கம்|Lion','புலி|Tiger','மாடு|Cow','குதிரை|Horse','ஆடு|Goat','செம்மறியாடு|Sheep','குரங்கு|Monkey','கரடி|Bear','நரி|Fox','மான்|Deer','ஒட்டகம்|Camel','பன்றி|Pig','எலி|Mouse','முயல்|Rabbit','நீர்யானை|Hippopotamus','முதலை|Crocodile','பாம்பு|Snake'],
+    birds:['காகம்|Crow','கிளி|Parrot','மயில்|Peacock','சிட்டுக்குருவி|Sparrow','ஆந்தை|Owl','புறா|Pigeon','வாத்து|Duck','கோழி|Hen','சேவல்|Rooster','குயில்|Cuckoo','பருந்து|Eagle','கழுகு|Vulture','நாரை|Stork','மீன்கொத்தி|Kingfisher','அன்னம்|Swan','வான்கோழி|Turkey','பென்குயின்|Penguin','தும்பி|Bulbul','மைனா|Myna','நாரைமூக்கு|Crane'],
+    fruits:['ஆப்பிள்|Apple','வாழைப்பழம்|Banana','மாம்பழம்|Mango','திராட்சை|Grapes','ஆரஞ்சு|Orange','எலுமிச்சை|Lemon','பப்பாளி|Papaya','கொய்யா|Guava','மாதுளை|Pomegranate','அன்னாசி|Pineapple','ஸ்ட்ராபெரி|Strawberry','பேரிக்காய்|Pear','சப்போட்டா|Sapota','நாவற்பழம்|Jamun','ஆமணக்கு|Fig','பிளம்|Plum','செர்ரி|Cherry','பீச்|Peach','பேரிச்சை|Date','கிவி|Kiwi'],
+    verbs:['படி|Read','எழுது|Write','ஓடு|Run','நட|Walk','சாப்பிடு|Eat','குடி|Drink','பேசு|Speak','கேள்|Listen','பார்|See','எடு|Take','கொடு|Give','வா|Come','போ|Go','உட்கார்|Sit','நில்|Stand','தூங்கு|Sleep','எழு|Wake','விளையாடு|Play','வேலைசெய்|Work','சிந்தி|Think'],
+    household:['மேஜை|Table','நாற்காலி|Chair','கட்டில்|Bed','அலமாரி|Cupboard','கதவு|Door','ஜன்னல்|Window','விளக்கு|Lamp','மின்விசிறி|Fan','டிவி|Television','ஃப்ரிட்ஜ்|Refrigerator','அடுப்பு|Stove','பாத்திரம்|Vessel','கரண்டி|Spoon','தட்டு|Plate','கிண்ணம்|Bowl','துடைப்பம்|Broom','கடிகாரம்|Clock','தலையணை|Pillow','போர்வை|Blanket','தொலைபேசி|Telephone'],
+    grocery:['அரிசி|Rice','கோதுமை|Wheat','சர்க்கரை|Sugar','உப்பு|Salt','எண்ணெய்|Oil','பால்|Milk','தயிர்|Curd','வெண்ணெய்|Butter','முட்டை|Egg','பருப்பு|Lentils','கடலை|Peanut','பாசிப்பயறு|Green gram','உருளைக்கிழங்கு|Potato','வெங்காயம்|Onion','தக்காளி|Tomato','மிளகாய்|Chilli','மஞ்சள்|Turmeric','மிளகு|Pepper','சீரகம்|Cumin','கொத்தமல்லி|Coriander']
+  },
+  2:{
+    animals:[
+      'சிறுத்தை|Leopard',
+      'சம்பல் கரடி|Sloth Bear',
+      'காட்டெருமை|Wild Buffalo',
+      'முள்ளம்பன்றி|Porcupine',
+      'கருங்குரங்கு|Gorilla',
+      'பனிக்கரடி|Polar Bear',
+      'காட்டுப்பன்றி|Wild Boar',
+      'கங்காரு|Kangaroo',
+      'நீர்நாய்|Otter',
+      'காட்டுநாய்|Wolf',
+      'பல்லி|Lizard',
+      'நீல திமிங்கிலம்|Blue Whale',
+      'டால்பின்|Dolphin',
+      'சுறா|Shark',
+      'ஆர்மடில்லோ|Armadillo',
+      'காட்டுப் பூனை|Lynx',
+      'காடெருமை|Bison',
+      'காட்டுக் குதிரை|Zebra',
+      'ஓநாய்|Jackal',
+      'மலை ஆடு|Mountain Goat'
+    ],
+
+    birds:[
+      'மயூரி|Peahen',
+      'சாம்பல் கிளி|African Grey Parrot',
+      'பனிப்பறவை|Snowy Owl',
+      'கடல் காக்கை|Seagull',
+      'வெள்ளை நாரை|Egret',
+      'மலை கழுகு|Golden Eagle',
+      'நீல ஜெய்|Blue Jay',
+      'சிகப்பு கார்டினல்|Cardinal',
+      'தீப்பறவை|Flamingo',
+      'காட்டு வாத்து|Wild Duck',
+      'கருப்பு அன்னம்|Black Swan',
+      'மரங்கொத்தி|Woodpecker',
+      'இரவு பருந்து|Night Hawk',
+      'பனிப்புறா|Snow Pigeon',
+      'நீல குயில்|Asian Koel',
+      'சாம்பல் கொக்கு|Heron',
+      'மலை கோழி|Mountain Quail',
+      'காட்டுக் கோழி|Jungle Fowl',
+      'பறக்கும் நரி|Flying Fox',
+      'மழைப்பறவை|Rain Bird'
+    ],
+
+    fruits:[
+      'ப்ளூபெரி|Blueberry',
+      'ராஸ்பெரி|Raspberry',
+      'பிளாக்பெரி|Blackberry',
+      'டிராகன் பழம்|Dragon Fruit',
+      'அவகாடோ|Avocado',
+      'கிரேப் பழம்|Grapefruit',
+      'பேஷன் பழம்|Passion Fruit',
+      'லிச்சிப் பழம்|Lychee',
+      'முலாம் பழம்|Muskmelon',
+      'வாட்டர்மெலன்|Watermelon',
+      'காட்டுப்பழம்|Wild Berry',
+      'புளி ஆப்பிள்|Custard Apple',
+      'நெல்லிப்பழம்|Gooseberry',
+      'காகி பழம்|Persimmon',
+      'ஜாக்பழம்|Jackfruit',
+      'சீன பேரிக்காய்|Asian Pear',
+      'மங்குஸ்தான்|Mangosteen',
+      'ஸ்டார் பழம்|Star Fruit',
+      'பப்பயா விதை|Papaya Seed',
+      'சீத்தாப்பழம்|Sugar Apple'
+    ],
+
+    verbs:[
+      'ஆய்வு செய்|Research',
+      'விளக்கி சொல்|Explain',
+      'ஒப்பிடு|Compare',
+      'தீர்மானி|Decide',
+      'திட்டமிடு|Plan',
+      'பரிசோதனை செய்|Experiment',
+      'கவனி|Observe',
+      'மதிப்பீடு செய்|Evaluate',
+      'ஆராய்ச்சி செய்|Investigate',
+      'விவரித்து எழுது|Describe',
+      'நினைவுகொள்|Remember',
+      'கணித்து பார்|Calculate',
+      'கண்டுபிடி|Discover',
+      'அமை|Organize',
+      'பாதுகாப்பு செய்|Protect',
+      'சரிபார்|Verify',
+      'உருவாக்கு|Create',
+      'தொடங்கு|Initiate',
+      'முடிவு செய்|Conclude',
+      'வளர்த்து|Develop'
+    ],
+
+    household:[
+      'எழுத்து மேஜை|Study Desk',
+      'நூலக அலமாரி|Bookshelf',
+      'துவைப்பொறி|Washing Machine',
+      'மைக்ரோவேவ் அடுப்பு|Microwave Oven',
+      'மின்சார இஸ்திரி|Electric Iron',
+      'தூசி உறிஞ்சி|Vacuum Cleaner',
+      'நீர் காய்ச்சும் கருவி|Water Heater',
+      'மின் கலப்பான்|Mixer Grinder',
+      'சோபா|Sofa',
+      'திரைச்சீலை|Curtain',
+      'பாய்மரம்|Doormat',
+      'சுவர் கடிகாரம்|Wall Clock',
+      'மின்விளக்கு|LED Light',
+      'மின்தடுப்பு|Extension Board',
+      'அலங்கார கண்ணாடி|Mirror',
+      'சேமிப்பு பெட்டி|Storage Box',
+      'பாத்திர அலமாரி|Dish Rack',
+      'தண்ணீர் பாட்டில்|Water Bottle',
+      'குப்பை தொட்டி|Dustbin',
+      'மின் அடுப்பு|Electric Stove'
+    ],
+
+    grocery:[
+      'பிரவுன் அரிசி|Brown Rice',
+      'ஓட்ஸ்|Oats',
+      'சோளம்|Maize',
+      'சிறுதானியம்|Millets',
+      'ஆலிவ் எண்ணெய்|Olive Oil',
+      'தேங்காய் எண்ணெய்|Coconut Oil',
+      'பன்னீர்|Paneer',
+      'சோயா|Soybean',
+      'பாதாம்|Almond',
+      'முந்திரி|Cashew',
+      'உலர் திராட்சை|Raisins',
+      'தேனீர் பொடி|Tea Powder',
+      'காப்பி பொடி|Coffee Powder',
+      'வெண்ணிலா|Vanilla',
+      'பேக்கிங் சோடா|Baking Soda',
+      'பேக்கிங் பவுடர்|Baking Powder',
+      'சீரக தூள்|Cumin Powder',
+      'மிளகாய் தூள்|Chilli Powder',
+      'தனியா தூள்|Coriander Powder',
+      'சிவப்பு சர்க்கரை|Brown Sugar'
+    ]
+  }
+
 };
 
 // ===== WORD RELATIONS DATA (20 WORDS) =====
-const WORD_RELATIONS = [
+const WORD_RELATIONS_OLD = [
   {
     ta: "பெரியது",
     en: "Big",
@@ -388,10 +562,262 @@ const WORD_RELATIONS = [
   }
 ];
 
+const WORD_RELATIONS = {
+  1:[
+    {
+      ta: "பெரியது",
+      en: "Big",
+      synonyms: { ta: ["விசாலமானது", "மிகப்பெரியது"], en: ["Large", "Huge"] },
+      antonyms: { ta: ["சிறியது"], en: ["Small"] }
+    },
+    {
+      ta: "வேகமாக",
+      en: "Fast",
+      synonyms: { ta: ["அதிவேகமாக"], en: ["Quick"] },
+      antonyms: { ta: ["மெதுவாக"], en: ["Slow"] }
+    },
+    {
+      ta: "சுத்தமானது",
+      en: "Clean",
+      synonyms: { ta: ["தூய்மையானது"], en: ["Neat"] },
+      antonyms: { ta: ["அழுக்கானது"], en: ["Dirty"] }
+    },
+    {
+      ta: "புதியது",
+      en: "New",
+      synonyms: { ta: ["சமீபத்திய"], en: ["Fresh"] },
+      antonyms: { ta: ["பழையது"], en: ["Old"] }
+    },
+    {
+      ta: "நல்லது",
+      en: "Good",
+      synonyms: { ta: ["சிறந்தது", "மேன்மையானது"], en: ["Nice", "Excellent"] },
+      antonyms: { ta: ["கெட்டது"], en: ["Bad"] }
+    },
+    {
+      ta: "சந்தோஷம்",
+      en: "Happy",
+      synonyms: { ta: ["மகிழ்ச்சி", "ஆனந்தம்"], en: ["Joyful", "Glad"] },
+      antonyms: { ta: ["சோகம்"], en: ["Sad"] }
+    },
+    {
+      ta: "அழகானது",
+      en: "Beautiful",
+      synonyms: { ta: ["இனிமையானது"], en: ["Pretty"] },
+      antonyms: { ta: ["அழகில்லாதது"], en: ["Ugly"] }
+    },
+    {
+      ta: "வலுவானது",
+      en: "Strong",
+      synonyms: { ta: ["உறுதியானது"], en: ["Powerful"] },
+      antonyms: { ta: ["பலவீனமானது"], en: ["Weak"] }
+    },
+    {
+      ta: "எளிதானது",
+      en: "Easy",
+      synonyms: { ta: ["சுலபமானது"], en: ["Simple"] },
+      antonyms: { ta: ["கடினமானது"], en: ["Hard"] }
+    },
+    {
+      ta: "மென்மையானது",
+      en: "Soft",
+      synonyms: { ta: ["நெகிழ்வானது"], en: ["Gentle"] },
+      antonyms: { ta: ["கடினமானது"], en: ["Hard"] }
+    },
+    {
+      ta: "குளிர்ந்தது",
+      en: "Cold",
+      synonyms: { ta: ["சீதமானது"], en: ["Cool"] },
+      antonyms: { ta: ["சூடானது"], en: ["Hot"] }
+    },
+    {
+      ta: "உயரமானது",
+      en: "Tall",
+      synonyms: { ta: ["நீளமானது"], en: ["High"] },
+      antonyms: { ta: ["குறுகிய"], en: ["Short"] }
+    },
+    {
+      ta: "வேகமானது",
+      en: "Quick",
+      synonyms: { ta: ["சுறுசுறுப்பானது"], en: ["Fast"] },
+      antonyms: { ta: ["மெதுவானது"], en: ["Slow"] }
+    },
+    {
+      ta: "பெரும்பான்மை",
+      en: "Many",
+      synonyms: { ta: ["அதிகமான"], en: ["Several"] },
+      antonyms: { ta: ["குறைவான"], en: ["Few"] }
+    },
+    {
+      ta: "முழுமையானது",
+      en: "Full",
+      synonyms: { ta: ["நிறைந்த"], en: ["Complete"] },
+      antonyms: { ta: ["காலியான"], en: ["Empty"] }
+    },
+    {
+      ta: "தூய்மை",
+      en: "Pure",
+      synonyms: { ta: ["சுத்தமான"], en: ["Clean"] },
+      antonyms: { ta: ["மாசான"], en: ["Impure"] }
+    },
+    {
+      ta: "வெளிச்சமானது",
+      en: "Bright",
+      synonyms: { ta: ["ஒளிமிக்க"], en: ["Shiny"] },
+      antonyms: { ta: ["இருண்ட"], en: ["Dark"] }
+    },
+    {
+      ta: "பாதுகாப்பானது",
+      en: "Safe",
+      synonyms: { ta: ["பாதுகாக்கப்பட்ட"], en: ["Secure"] },
+      antonyms: { ta: ["ஆபத்தானது"], en: ["Dangerous"] }
+    },
+    {
+      ta: "சுறுசுறுப்பானது",
+      en: "Active",
+      synonyms: { ta: ["வேகமான"], en: ["Energetic"] },
+      antonyms: { ta: ["சோம்பேறியான"], en: ["Lazy"] }
+    },
+    {
+      ta: "அமைதியானது",
+      en: "Quiet",
+      synonyms: { ta: ["மௌனமான"], en: ["Silent"] },
+      antonyms: { ta: ["சத்தமான"], en: ["Noisy"] }
+    }
+  ],
+  2:[
+    {
+      ta: "மாபெரியது",
+      en: "Enormous",
+      synonyms: { ta: ["மிகவும் விசாலமானது", "பிரமாண்டமானது"], en: ["Huge", "Massive"] },
+      antonyms: { ta: ["அற்பமானது"], en: ["Tiny"] }
+    },
+    {
+      ta: "அதிவேகமானது",
+      en: "Rapid",
+      synonyms: { ta: ["மின்னல் வேகமானது"], en: ["Swift", "Speedy"] },
+      antonyms: { ta: ["மந்தமானது"], en: ["Sluggish"] }
+    },
+    {
+      ta: "தூய்மையாக பராமரிக்கப்பட்டது",
+      en: "Spotless",
+      synonyms: { ta: ["மாசில்லாதது"], en: ["Immaculate"] },
+      antonyms: { ta: ["மாசடைந்தது"], en: ["Filthy"] }
+    },
+    {
+      ta: "நவீனமானது",
+      en: "Modern",
+      synonyms: { ta: ["சமகாலத்துக்கேற்ற"], en: ["Contemporary"] },
+      antonyms: { ta: ["பழங்காலமானது"], en: ["Outdated"] }
+    },
+    {
+      ta: "சிறப்பானது",
+      en: "Outstanding",
+      synonyms: { ta: ["மிகச் சிறந்தது", "புகழ்பெற்றது"], en: ["Remarkable", "Excellent"] },
+      antonyms: { ta: ["தரமற்றது"], en: ["Poor"] }
+    },
+    {
+      ta: "பேரானந்தம்",
+      en: "Delighted",
+      synonyms: { ta: ["மிகுந்த மகிழ்ச்சி"], en: ["Thrilled", "Joyful"] },
+      antonyms: { ta: ["மனவருத்தம்"], en: ["Depressed"] }
+    },
+    {
+      ta: "மனமகிழ்வானது",
+      en: "Attractive",
+      synonyms: { ta: ["கவர்ச்சியானது"], en: ["Appealing"] },
+      antonyms: { ta: ["விருப்பமற்றது"], en: ["Unpleasant"] }
+    },
+    {
+      ta: "திடமானது",
+      en: "Robust",
+      synonyms: { ta: ["உறுதியானது", "தாங்கும் திறன் கொண்டது"], en: ["Sturdy", "Resilient"] },
+      antonyms: { ta: ["பலவீனமானது"], en: ["Fragile"] }
+    },
+    {
+      ta: "சிரமமற்றது",
+      en: "Effortless",
+      synonyms: { ta: ["இலகுவானது"], en: ["Smooth"] },
+      antonyms: { ta: ["சிக்கலானது"], en: ["Complicated"] }
+    },
+    {
+      ta: "மிருதுவானது",
+      en: "Delicate",
+      synonyms: { ta: ["மென்மையானது", "நுண்ணிய"], en: ["Tender"] },
+      antonyms: { ta: ["கடுமையானது"], en: ["Harsh"] }
+    },
+    {
+      ta: "பனிப்போன்றது",
+      en: "Chilly",
+      synonyms: { ta: ["மிகக் குளிர்ந்தது"], en: ["Cool"] },
+      antonyms: { ta: ["கொதிக்கும்"], en: ["Boiling"] }
+    },
+    {
+      ta: "உயர்வடைந்தது",
+      en: "Elevated",
+      synonyms: { ta: ["மேல்நிலையான"], en: ["Raised"] },
+      antonyms: { ta: ["தாழ்ந்த"], en: ["Low"] }
+    },
+    {
+      ta: "சுறுசுறுப்புடன் செயல்படும்",
+      en: "Agile",
+      synonyms: { ta: ["விரைவாக நகரும்"], en: ["Nimble"] },
+      antonyms: { ta: ["மந்தமான"], en: ["Slow-moving"] }
+    },
+    {
+      ta: "அதிக அளவு",
+      en: "Abundant",
+      synonyms: { ta: ["மிகுந்த", "பெருமளவு"], en: ["Plentiful"] },
+      antonyms: { ta: ["அரிதான"], en: ["Scarce"] }
+    },
+    {
+      ta: "நிறைவுற்றது",
+      en: "Saturated",
+      synonyms: { ta: ["முழுமையாக நிரம்பிய"], en: ["Filled"] },
+      antonyms: { ta: ["வெறுமையான"], en: ["Vacant"] }
+    },
+    {
+      ta: "மாசற்றது",
+      en: "Uncontaminated",
+      synonyms: { ta: ["தூய்மையான"], en: ["Pure"] },
+      antonyms: { ta: ["மாசடைந்த"], en: ["Polluted"] }
+    },
+    {
+      ta: "ஒளிர்வானது",
+      en: "Radiant",
+      synonyms: { ta: ["பிரகாசமான"], en: ["Luminous"] },
+      antonyms: { ta: ["மங்கலான"], en: ["Dim"] }
+    },
+    {
+      ta: "நம்பகமானது",
+      en: "Reliable",
+      synonyms: { ta: ["நம்பிக்கைக்குரியது"], en: ["Trustworthy"] },
+      antonyms: { ta: ["நம்ப முடியாத"], en: ["Risky"] }
+    },
+    {
+      ta: "செயலாற்றலானது",
+      en: "Dynamic",
+      synonyms: { ta: ["உயர் ஆற்றல் கொண்ட"], en: ["Energetic"] },
+      antonyms: { ta: ["சோர்வான"], en: ["Inactive"] }
+    },
+    {
+      ta: "சாந்தமானது",
+      en: "Serene",
+      synonyms: { ta: ["மிக அமைதியான"], en: ["Peaceful"] },
+      antonyms: { ta: ["குழப்பமான"], en: ["Chaotic"] }
+    }
+  ]
 
+};
+  const QUIZ_TOTAL = 20;
+  const EXERCISE_TOTAL = 20;
 
   let list=[], i=0, score=0, exerciseIndex=0, exerciseOrder=[];
 
+function getCurrentData(){
+  const level = getCurrentLevel();
+  return LEVEL_DATA[level] || LEVEL_DATA[1];
+}
 
   function show(id){
   ['profile','home','mode','flash','quiz','exercise','match','result','progress']
@@ -405,6 +831,7 @@ const WORD_RELATIONS = [
   window.onload = () => {
   if(getProfile()){
     show('home');
+    updateHomeLevel();
     updateHomeProfile();
     updateHomeProgress();
 
@@ -415,18 +842,38 @@ const WORD_RELATIONS = [
 
 
   function selectCategory(c){
-    list = DATA[c].map(x=>{ const[t,e]=x.split('|'); return {ta:t,en:e}; });
+    list = getCurrentData()[c].map(x=>{ const[t,e]=x.split('|'); return {ta:t,en:e}; });
     i=0;
     modeTitle.textContent=c;
     show('mode');
   }
 
-  function selectRelation(type){
+  /*function selectRelation(type){
     list = WORD_RELATIONS.map(w=>({ ta:w.ta, en:type==='synonyms'?w.synonyms.en[0]:w.antonyms.en[0] }));
     i=0;
     modeTitle.textContent=type;
     show('mode');
-  }
+  }*/
+ function selectRelation(type){
+  const level = getCurrentLevel();
+
+  // get relations for current level, fallback to level 1
+  const relations = WORD_RELATIONS[level] || WORD_RELATIONS[1];
+
+  list = relations.map(w => {
+    return {
+      ta: w.ta,
+      en: type === 'synonyms'
+        ? w.synonyms.en[0]
+        : w.antonyms.en[0]
+    };
+  });
+
+  i = 0;
+  modeTitle.textContent = type.toUpperCase();
+  show('mode');
+}
+
 
   function startFlashcards(){ show('flash'); updateCard(); }
   function updateCard(){ front.textContent=list[i].ta; back.textContent=list[i].en; flashCounter.textContent=`${i+1} / ${list.length}`; }
@@ -468,7 +915,7 @@ const WORD_RELATIONS = [
 
   function nextQuiz(){
     if(quizNext.disabled) return;
-    if(i===list.length-1){if(isNewBest('quiz', score)) showNewBest(); recordQuiz(score);updateStreak(); showResult(); return; }
+    if(i===list.length-1){if(isNewBest('quiz', score)) showNewBest(); recordQuiz(score);updateStreak();checkLevelUnlock(); showResult(); return; }
     i++; loadQuiz();
   }
 
@@ -506,7 +953,7 @@ const WORD_RELATIONS = [
 
   function nextExercise(){
     if(exerciseNext.disabled) return;
-    if(exerciseIndex===exerciseOrder.length-1){if(isNewBest('exercise', score)) showNewBest(); recordExercise(score);updateStreak(); resultText.textContent=`Your score: ${score} / ${exerciseOrder.length}`; show('result'); return; }
+    if(exerciseIndex===exerciseOrder.length-1){if(isNewBest('exercise', score)) showNewBest(); recordExercise(score);updateStreak();checkLevelUnlock(); resultText.textContent=`Your score: ${score} / ${exerciseOrder.length}`; show('result'); return; }
     exerciseIndex++; loadExercise();
   }
 
@@ -544,7 +991,7 @@ const WORD_RELATIONS = [
       matchedCount++;
       matchCounter.textContent=`${matchedCount} / ${matchPairs.length}`;
       selectedLeft=null; selectedRight=null;
-      if(matchedCount===matchPairs.length){ recordMatch();updateStreak(); resultText.textContent=`You matched ${matchedCount} / ${matchPairs.length}`; show('result'); }
+      if(matchedCount===matchPairs.length){ recordMatch();updateStreak();checkLevelUnlock(); resultText.textContent=`You matched ${matchedCount} / ${matchPairs.length}`; show('result'); }
     } else {
       selectedLeft.btn.classList.add('wrong'); selectedRight.btn.classList.add('wrong');
       setTimeout(()=>{
@@ -590,6 +1037,130 @@ function formatProfileName(name){
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
+function levelKey(){
+  return `tamil_level_${getProfile()}`;
+}
+
+function getLevelState(){
+  const raw = localStorage.getItem(levelKey());
+  if(raw) return JSON.parse(raw);
+
+  // default for new profile
+  const state = { current: 1, unlocked: [1] };
+  localStorage.setItem(levelKey(), JSON.stringify(state));
+  return state;
+}
+
+function saveLevelState(state){
+  localStorage.setItem(levelKey(), JSON.stringify(state));
+}
+
+function getCurrentLevel(){
+  return getLevelState().current;
+}
+
+function setCurrentLevel(level){
+  const state = getLevelState();
+  if(state.unlocked.includes(level)){
+    state.current = level;
+    saveLevelState(state);
+  }
+}
+
+function isLevelUnlocked(level){
+  return getLevelState().unlocked.includes(level);
+}
+
+function checkLevelUnlock(){
+  const progress = getProgress();
+  const levelState = getLevelState();
+  const current = levelState.current;
+  const nextLevel = current + 1;
+
+  // Already unlocked → nothing to do
+  if(levelState.unlocked.includes(nextLevel)) return false;
+
+  // Practice checks
+  if(progress.quiz.attempts < 2) return false;
+  if(progress.exercise.attempts < 2) return false;
+  if(progress.match.attempts < 1) return false;
+
+  // Mastery checks
+  const quizPercent = percent(progress.quiz.best, QUIZ_TOTAL);
+  const exercisePercent = percent(progress.exercise.best, EXERCISE_TOTAL);
+
+  if(quizPercent < 70) return false;
+  if(exercisePercent < 70) return false;
+
+  // Consistency check
+  if(!progress.streak || progress.streak.count < 3) return false;
+
+  // ✅ Unlock next level
+  levelState.unlocked.push(nextLevel);
+  saveLevelState(levelState);
+  showLevelUnlocked(nextLevel);
+
+  return true; // unlocked now
+}
+
+function showLevelUnlocked(level){
+  const box = document.createElement('div');
+  box.innerHTML = `
+    🎉 <b>Level ${level} Unlocked!</b><br>
+    You can switch levels anytime from Home.
+  `;
+  box.style.position = 'fixed';
+  box.style.top = '50%';
+  box.style.left = '50%';
+  box.style.transform = 'translate(-50%, -50%)';
+  box.style.background = '#ecfeff';
+  box.style.color = '#0f172a';
+  box.style.padding = '18px 22px';
+  box.style.borderRadius = '14px';
+  box.style.textAlign = 'center';
+  box.style.boxShadow = '0 10px 30px rgba(0,0,0,.2)';
+  box.style.zIndex = '10000';
+
+  document.body.appendChild(box);
+
+  setTimeout(() => box.remove(), 2500);
+}
+function levelName(level){
+  if(level === 1) return '⭐ Beginner';
+  if(level === 2) return '⭐⭐ Intermediate';
+  if(level === 3) return '⭐⭐⭐ Advanced';
+  return `Level ${level}`;
+}
+function updateHomeLevel(){
+  document.getElementById('currentLevelLabel')
+    .textContent = levelName(getCurrentLevel());
+}
+
+function openLevelSelector(){
+  const state = getLevelState();
+  const box = document.getElementById('levelOptions');
+  box.innerHTML = '';
+
+  state.unlocked.forEach(level => {
+    const btn = document.createElement('button');
+    btn.textContent = levelName(level);
+    btn.style.display = 'block';
+    btn.style.width = '100%';
+    btn.style.margin = '8px 0';
+    btn.onclick = () => {
+      setCurrentLevel(level);
+      updateHomeLevel();
+      closeLevelSelector();
+    };
+    box.appendChild(btn);
+  });
+
+  document.getElementById('levelSelector').classList.remove('hidden');
+}
+
+function closeLevelSelector(){
+  document.getElementById('levelSelector').classList.add('hidden');
+}
 
   /* ===== PROGRESS TRACKING (GLOBAL) ===== */
 const PROGRESS_KEY = () => `tamil_progress_${getProfile()}`;
@@ -605,6 +1176,11 @@ function getProgress(){
 
 function saveProgress(p){
   localStorage.setItem(PROGRESS_KEY(), JSON.stringify(p));
+}
+
+function percent(score, total){
+  if(total === 0) return 0;
+  return Math.round((score / total) * 100);
 }
 
 function today(){
