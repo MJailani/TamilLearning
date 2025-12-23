@@ -390,7 +390,7 @@
   function shuffle(arr){ return arr.slice().sort(()=>Math.random()-0.5); }
 
   
-// ===== WORD RELATIONS DATA (20 WORDS) =====
+// ===== data section moved to their own files =====
 
   let currentCategory = null;
   let currentMode = null;
@@ -464,6 +464,7 @@ function updateHomeCategoryProgress(){
 
     if(id === 'home'){
       updateHomeCategoryProgress();
+      updateHomeProgress(); 
     }
   }
 
@@ -549,12 +550,7 @@ function updateHomeCategoryProgress(){
 
 
   function startFlashcards(){ show('flash'); updateCard(); }
-  /*function updateCard(){ 
-    front.textContent=list[i].ta; 
-    back.textContent=list[i].en; 
 
-    flashCounter.textContent=`${i+1} / ${list.length}`; 
-  }*/
   function updateCard(){ 
     if(list[i].img){
       front.innerHTML = `
